@@ -1,4 +1,5 @@
 ﻿using AnalogTrello.Data;
+using AnalogTrello.Models;
 using AnalogTrelloBE.Dto;
 using AnalogTrelloBE.Intefaces.IRepository;
 using Microsoft.EntityFrameworkCore;
@@ -18,6 +19,22 @@ public class UserRepository : IUserRepository
     {
         var emailExist = await _context.Users.AnyAsync(u => u.Email == user.Email);
         var userNameExist = await _context.Users.AnyAsync(u => u.UserName == user.UserName);
-        return emailExist && userNameExist;
+        return !emailExist && !userNameExist;
+    }
+
+    public async Task<User?> GetUserById(long id)
+    {
+        return await _context.Users.SingleOrDefaultAsync(u => u.Id == id);
+    }
+
+    public async Task<User?> GetUserByUsername(string username)
+    {
+        return await _context.Users.SingleOrDefaultAsync(u => u.UserName == username);
+    }
+
+    public async Task<bool> InsertUser(User user)
+    {
+        await _context.Users.AddAsync(user);
+        return await _context.SaveChangesAsync() > 0;
     }
 }
