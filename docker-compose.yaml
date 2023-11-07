@@ -3,10 +3,10 @@ services:
   api:
     image: task-tracker-backend:latest
     build:
-      context: ./AnalogTrelloBE
+      context: ./AnalogTrello/AnalogTrelloBE/
       dockerfile: Dockerfile
     ports:
-      - "5000:80" 
+      - "5000:80"
     depends_on:
       - postgres
       - redis
@@ -35,8 +35,8 @@ services:
   rabbitmq:
     image: rabbitmq:latest
     ports:
-      - "5672:5672" 
-      - "15672:15672" 
+      - "5672:5672"
+      - "15672:15672"
     environment:
       RABBITMQ_DEFAULT_USER: your-rabbitmq-username #test-name
       RABBITMQ_DEFAULT_PASS: your-rabbitmq-password #test-name
