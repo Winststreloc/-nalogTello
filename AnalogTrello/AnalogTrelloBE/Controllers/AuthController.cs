@@ -1,8 +1,10 @@
-﻿using AnalogTrelloBE.Dto;
+﻿using System.Text.Json;
+using AnalogTrelloBE.Dto;
 using AnalogTrelloBE.Intefaces.IRepository;
 using AnalogTrelloBE.Intefaces.IService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Distributed;
 
 
 namespace AnalogTrelloBE.Controllers;
@@ -17,13 +19,16 @@ public class AuthController : Controller
     private readonly IPasswordHashingService _passwordHashingService;
     private readonly ITokenService _tokenService;
 
+    private ICashService _cashService;
+
     public AuthController(IUserRepository userRepository, IUserService userService,
-        IPasswordHashingService passwordHashingService, ITokenService tokenService)
+        IPasswordHashingService passwordHashingService, ITokenService tokenService, ICashService cashService)
     {
         _userRepository = userRepository;
         _userService = userService;
         _passwordHashingService = passwordHashingService;
         _tokenService = tokenService;
+        _cashService = cashService;
         _responseDto = new ResponseDto();
     }
 
@@ -53,6 +58,9 @@ public class AuthController : Controller
             Response.StatusCode = 500;
         }
 
+        var user = await _userRepository.GetUserByUsername(userDto.UserName);
+        await _cashService.CashingData(user.Id, user);
+
         _responseDto.IsSuccess = true;
         _responseDto.Result = "User is registered";
         Response.StatusCode = 200;
@@ -73,21 +81,23 @@ public class AuthController : Controller
             return _responseDto;
         }
 
-        if (_passwordHashingService.VerifyHashedPassword(candidate.PasswordHash, userDto.Password))
+        if (!_passwordHashingService.VerifyHashedPassword(candidate.PasswordHash, userDto.Password))
         {
-            var userTokens = _tokenService.GenerateTokens(candidate);
-            _responseDto.Result = userTokens;
+            _responseDto.IsSuccess = false;
+            _responseDto.ErrorMessages = new List<string> { "Invalid refresh_token" };
             return _responseDto;
         }
-
-        _responseDto.IsSuccess = false;
-        _responseDto.ErrorMessages = new List<string> { "Invalid refresh_token" };
+        
+        var userTokens = _tokenService.GenerateTokens(candidate);
+        //TODO реализовать кэш токенов
+        await _cashService.CashingData(candidate.Id, candidate);
+        _responseDto.Result = userTokens;
         return _responseDto;
     }
-    
+
     [HttpGet("refresh-token")]
     [Authorize]
-    public async Task<ResponseDto> RefreshToken([FromQuery]string refreshToken)
+    public async Task<ResponseDto> RefreshToken([FromQuery] string refreshToken)
     {
         if (_tokenService.ValidateRefreshToken(refreshToken))
         {
@@ -100,6 +110,7 @@ public class AuthController : Controller
                 _responseDto.IsSuccess = false;
                 return _responseDto;
             }
+
             var candidate = await _userRepository.GetUserById(Int64.Parse(userId));
 
             var userTokens = _tokenService.GenerateTokens(candidate);

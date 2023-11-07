@@ -10,8 +10,8 @@ namespace AnalogTrelloBE.Services;
 
 public class TokenService : ITokenService
 {
-    private const int _accessTokenExpiresMinutes = 5;
-    private const int _refreshTokenExpiresDays = 30;
+    private const int _accessTokenExpiresMinutes = 2;
+    private const int _refreshTokenExpiresDays = 1;
 
     public Token GenerateTokens(User candidateForTokens)
     {
@@ -80,7 +80,6 @@ public class TokenService : ITokenService
             IssuerSigningKey = AuthOptions.GetSymmetricSecurityKey(),
             ValidAudience = AuthOptions.AUDIENCE,
         };
-
 
         SecurityToken validatedToken;
 

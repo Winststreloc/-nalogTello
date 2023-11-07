@@ -14,5 +14,6 @@ public static class DIExtentions
         
         service.AddScoped<IPasswordHashingService, PasswordHashingService>();
         service.AddScoped<ITokenService, TokenService>();
+        service.AddScoped<ICashService, CashService>();
     }
 }
