@@ -30,13 +30,13 @@ jobs:
       with:
         registry: ghcr.io
         username: ${{ github.actor }}
-        password: ${{ secrets.DOCKER_TOKEN }}
+        password: ${{ secrets.GITHUB_TOKEN }}
           
     - name: Build and Push Docker Image
       uses: docker/build-push-action@v3.3.0
       with:
-        file: AnalogTrelloBE/AnalogTrello/AnalogTrelloBE/Dockerfile
-        context: AnalogTrelloBE/AnalogTrello
+        file: AnalogTrello/AnalogTrelloBE/Dockerfile
+        context: AnalogTrello/AnalogTrelloBE
         push: true
         tags: winststreloc/analog:latest
     - name: Build the Docker image
