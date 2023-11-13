@@ -1,0 +1,42 @@
+version: '3.9'
+services:
+  api:
+    image: task-tracker-backend:latest
+    build:
+      context: ./AnalogTrello/AnalogTrelloBE/
+      dockerfile: Dockerfile
+    ports:
+      - "5000:80"
+    depends_on:
+      - postgres
+      - redis
+      - rabbitmq
+    environment:
+      ConnectionStrings__PostgreSQL: "Host=localhost;Port=5432;Database=dbTrello_analog;Username=postgres;Password=1488;"
+      Redis__Configuration: "redis:6379"
+      RabbitMQ__Host: "rabbitmq"
+      RabbitMQ__UserName: "your-rabbitmq-username" #test-name
+      RabbitMQ__Password: "your-rabbitmq-password" #test-name
+
+  postgres:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: dbTrello_analog
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1488
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+
+  rabbitmq:
+    image: rabbitmq:latest
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: your-rabbitmq-username #test-name
+      RABBITMQ_DEFAULT_PASS: your-rabbitmq-password #test-name
