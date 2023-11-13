@@ -32,9 +32,13 @@ jobs:
       with:
         dotnet-version: 6.0.x
 
+    - name: Restore dependencies
+      run: dotnet restore
+
     - name: Build
-      run: dotnet build --no-restore
+      run: dotnet build
       working-directory: ${{ env.ROUTE }}
+      
 
     - name: Test
       run: dotnet test --no-build --verbosity normal      
