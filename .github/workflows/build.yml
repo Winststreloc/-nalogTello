@@ -34,6 +34,7 @@ jobs:
 
     - name: Restore dependencies
       run: dotnet restore
+      working-directory: ${{ env.ROUTE }}
 
     - name: Build
       run: dotnet build
