@@ -1,4 +1,4 @@
-﻿namespace AnalogTrelloBE.Intefaces.IService;
+﻿namespace AnalogTrelloBE.Interfaces.IService;
 
 public interface IPasswordHashingService
 {

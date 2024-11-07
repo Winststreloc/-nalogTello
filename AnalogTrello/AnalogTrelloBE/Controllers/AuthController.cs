@@ -1,10 +1,8 @@
-﻿using System.Text.Json;
-using AnalogTrelloBE.Dto;
-using AnalogTrelloBE.Intefaces.IRepository;
-using AnalogTrelloBE.Intefaces.IService;
+﻿using AnalogTrelloBE.Dto;
+using AnalogTrelloBE.Interfaces.IRepository;
+using AnalogTrelloBE.Interfaces.IService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Distributed;
 
 
 namespace AnalogTrelloBE.Controllers;

@@ -1,4 +1,4 @@
-using AnalogTrello.Data;
+using AnalogTrelloBE.Data;
 using AnalogTrelloBE.Helpers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;

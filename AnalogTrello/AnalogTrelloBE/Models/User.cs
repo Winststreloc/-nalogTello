@@ -1,4 +1,4 @@
-﻿namespace AnalogTrello.Models;
+﻿namespace AnalogTrelloBE.Models;
 
 public class User : BaseEntity
 {

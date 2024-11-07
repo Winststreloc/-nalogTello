@@ -3,15 +3,16 @@ using System.Security.Claims;
 using System.Security.Principal;
 using AnalogTrello.Models;
 using AnalogTrelloBE.Helpers;
-using AnalogTrelloBE.Intefaces.IService;
+using AnalogTrelloBE.Interfaces.IService;
+using AnalogTrelloBE.Models;
 using Microsoft.IdentityModel.Tokens;
 
 namespace AnalogTrelloBE.Services;
 
 public class TokenService : ITokenService
 {
-    private const int _accessTokenExpiresMinutes = 2;
-    private const int _refreshTokenExpiresDays = 1;
+    private const int AccessTokenExpiresMinutes = 2;
+    private const int RefreshTokenExpiresDays = 1;
 
     public Token GenerateTokens(User candidateForTokens)
     {
@@ -30,7 +31,7 @@ public class TokenService : ITokenService
         return token;
     }
 
-    private IEnumerable<Claim> GetUserClaims(User candidateForTokens)
+    private List<Claim> GetUserClaims(User candidateForTokens)
     {
         var claims = new List<Claim>
         {
@@ -41,27 +42,27 @@ public class TokenService : ITokenService
     }
 
 
-    public string GenerateAccessToken(IEnumerable<Claim> userClaims)
+    public string GenerateAccessToken(List<Claim> userClaims)
     {
         var jwt = new JwtSecurityToken(
             issuer: AuthOptions.ISSUER,
             audience: AuthOptions.AUDIENCE,
             claims: userClaims,
-            expires: DateTime.UtcNow.Add(TimeSpan.FromMinutes(_accessTokenExpiresMinutes)),
+            expires: DateTime.UtcNow.Add(TimeSpan.FromMinutes(AccessTokenExpiresMinutes)),
             signingCredentials: new SigningCredentials(AuthOptions.GetSymmetricSecurityKey(),
                 SecurityAlgorithms.HmacSha256));
 
         return new JwtSecurityTokenHandler().WriteToken(jwt);
     }
 
-    public string GenerateRefreshToken(IEnumerable<Claim> userClaims)
+    public string GenerateRefreshToken(List<Claim> userClaims)
     {
         var id = userClaims.Where(claim => claim.Type == "Id");
         var jwt = new JwtSecurityToken(
             issuer: AuthOptions.ISSUER,
             audience: AuthOptions.AUDIENCE,
             claims: userClaims.Where(claim => claim.Type == "Id"),
-            expires: DateTime.UtcNow.Add(TimeSpan.FromDays(_refreshTokenExpiresDays)),
+            expires: DateTime.UtcNow.Add(TimeSpan.FromDays(RefreshTokenExpiresDays)),
             signingCredentials: new SigningCredentials(AuthOptions.GetSymmetricSecurityKey(),
                 SecurityAlgorithms.HmacSha256));
 

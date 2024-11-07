@@ -1,7 +1,8 @@
 ﻿using AnalogTrello.Models;
 using AnalogTrelloBE.Dto;
-using AnalogTrelloBE.Intefaces.IRepository;
-using AnalogTrelloBE.Intefaces.IService;
+using AnalogTrelloBE.Interfaces.IRepository;
+using AnalogTrelloBE.Interfaces.IService;
+using AnalogTrelloBE.Models;
 
 namespace AnalogTrelloBE.Services;
 

@@ -1,8 +1,7 @@
-﻿using AnalogTrello.Models;
-using AnalogTrelloBE.Dto;
-using Task = AnalogTrello.Models.Task;
+﻿using AnalogTrelloBE.Dto;
+using AnalogTrelloBE.Models;
 
-namespace AnalogTrelloBE.Intefaces.IRepository;
+namespace AnalogTrelloBE.Interfaces.IRepository;
 
 public interface IUserRepository
 {

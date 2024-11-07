@@ -1,5 +1,5 @@
 ﻿using System.Security.Cryptography;
-using AnalogTrelloBE.Intefaces.IService;
+using AnalogTrelloBE.Interfaces.IService;
 
 namespace AnalogTrelloBE.Services;
 

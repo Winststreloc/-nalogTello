@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
 using AnalogTrello.Models;
 using AnalogTrelloBE.Dto;
-using AnalogTrelloBE.Intefaces.IRepository;
+using AnalogTrelloBE.Interfaces.IRepository;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
@@ -12,21 +12,19 @@ namespace AnalogTrelloBE.Controllers;
 [Route("[controller]")]
 public class UserController : Controller
 {
-    private ResponseDto? _responseDto;
     private readonly IMapper _mapper;
     private readonly IUserRepository _userRepository;
-    private IDistributedCache cache;
+    private readonly IDistributedCache _cache;
 
     public UserController(IUserRepository userRepository, IMapper mapper, IDistributedCache distributedCache)
     {
         _userRepository = userRepository;
         _mapper = mapper;
-        cache = distributedCache;
-        _responseDto = new ResponseDto();
+        _cache = distributedCache;
     }
 
     [HttpGet("$id")]
-    public async Task<ResponseDto> GetUser(long userId)
+    public async Task<ResponseDto<UserDto>> GetUser(long userId)
     {
         if (!ModelState.IsValid)
         {
@@ -36,8 +34,13 @@ public class UserController : Controller
         //TODO тут кароче нужно придумать как работать с кэшом, а именно уменя проблемы, нужно чтобы везде в Redis шёл один и 
         //todo тот же тип данных, а именно UserDto и Token
         UserDto? user = null;
-        var userString = await cache.GetStringAsync(userId.ToString());
-        if (userString != null) user = JsonSerializer.Deserialize<UserDto>(userString);
+        
+        var userString = await _cache.GetStringAsync(userId.ToString());
+        
+        if (userString != null)
+        {
+            user = JsonSerializer.Deserialize<UserDto>(userString);
+        }
 
         if (user == null)
         {

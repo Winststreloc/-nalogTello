@@ -1,8 +1,8 @@
-﻿using AnalogTrello.Models;
+﻿using AnalogTrelloBE.Models;
 using Microsoft.EntityFrameworkCore;
-using Task = AnalogTrello.Models.Task;
+using Task = AnalogTrelloBE.Models.Task;
 
-namespace AnalogTrello.Data;
+namespace AnalogTrelloBE.Data;
 
 public class ToDoDbContext : DbContext
 {

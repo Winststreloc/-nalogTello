@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace AnalogTrello.Models;
+﻿namespace AnalogTrelloBE.Models;
 
 public class BaseEntity
 {

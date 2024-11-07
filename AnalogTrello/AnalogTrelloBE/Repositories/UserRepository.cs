@@ -1,7 +1,8 @@
-﻿using AnalogTrello.Data;
-using AnalogTrello.Models;
+﻿using AnalogTrello.Models;
+using AnalogTrelloBE.Data;
 using AnalogTrelloBE.Dto;
-using AnalogTrelloBE.Intefaces.IRepository;
+using AnalogTrelloBE.Interfaces.IRepository;
+using AnalogTrelloBE.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace AnalogTrelloBE.Repositories;

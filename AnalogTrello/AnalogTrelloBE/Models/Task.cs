@@ -1,7 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
-using TaskStatus = AnalogTrello.Models.Enums.TaskStatus;
+﻿using AnalogTrello.Models;
 
-namespace AnalogTrello.Models;
+namespace AnalogTrelloBE.Models;
 
 public class Task : BaseEntity
 {

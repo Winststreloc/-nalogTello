@@ -2,7 +2,8 @@
 using System.Text.Json;
 using AnalogTrello.Models;
 using AnalogTrelloBE.Dto;
-using AnalogTrelloBE.Intefaces.IService;
+using AnalogTrelloBE.Interfaces.IService;
+using AnalogTrelloBE.Models;
 using Microsoft.Extensions.Caching.Distributed;
 using Task = System.Threading.Tasks.Task;
 
