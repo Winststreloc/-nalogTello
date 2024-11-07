@@ -47,22 +47,18 @@ public class UserController : Controller
             user = _mapper.Map<UserDto>(await _userRepository.GetUserById(userId));
             if (user == null)
             {
-                _responseDto.ErrorMessages = new List<string> { "User not found" };
-                _responseDto.IsSuccess = false;
                 Response.StatusCode = 404;
-                return _responseDto;
+                return ResponseDto<UserDto>.Failed("User not found");
             }
 
             userString = JsonSerializer.Serialize(user);
-            await cache.SetStringAsync(userId.ToString(), userString, new DistributedCacheEntryOptions
+            await _cache.SetStringAsync(userId.ToString(), userString, new DistributedCacheEntryOptions
             {
                 AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(2)
             });
         }
-
-        _responseDto.Result = user;
-        _responseDto.IsSuccess = true;
+        
         Response.StatusCode = 200;
-        return _responseDto;
+        return ResponseDto<UserDto>.Success(user);
     }
 }

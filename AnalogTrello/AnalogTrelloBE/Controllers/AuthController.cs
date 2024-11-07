@@ -1,6 +1,7 @@
 ﻿using AnalogTrelloBE.Dto;
 using AnalogTrelloBE.Interfaces.IRepository;
 using AnalogTrelloBE.Interfaces.IService;
+using AnalogTrelloBE.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,13 +12,12 @@ namespace AnalogTrelloBE.Controllers;
 [Route("[controller]")]
 public class AuthController : Controller
 {
-    private ResponseDto? _responseDto;
     private readonly IUserRepository _userRepository;
     private readonly IUserService _userService;
     private readonly IPasswordHashingService _passwordHashingService;
     private readonly ITokenService _tokenService;
 
-    private ICashService _cashService;
+    private readonly ICashService _cashService;
 
     public AuthController(IUserRepository userRepository, IUserService userService,
         IPasswordHashingService passwordHashingService, ITokenService tokenService, ICashService cashService)
@@ -27,98 +27,83 @@ public class AuthController : Controller
         _passwordHashingService = passwordHashingService;
         _tokenService = tokenService;
         _cashService = cashService;
-        _responseDto = new ResponseDto();
     }
 
     [HttpPost("register")]
-    public async Task<ResponseDto> Register(UserDto userDto)
+    public async Task<ResponseDto<UserDto>> Register(UserDto userDto)
     {
         if (!ModelState.IsValid)
         {
-            _responseDto.ErrorMessages = new List<string> { "Invalid username or password." };
-            _responseDto.IsSuccess = false;
-            return _responseDto;
+            return ResponseDto<UserDto>.Failed("Invalid username or password.");
         }
 
         if (!await _userRepository.EmailOrUsernameExists(userDto))
         {
             Response.StatusCode = 409;
-            Response.ContentType = "application/json";
-            _responseDto.ErrorMessages = new List<string> { "Email or Username exists" };
-            _responseDto.IsSuccess = false;
-            return _responseDto;
+            return ResponseDto<UserDto>.Failed("Email or Username exists");
         }
 
         if (!await _userService.RegisterUser(userDto))
         {
-            _responseDto.IsSuccess = false;
-            _responseDto.ErrorMessages = new List<string> { "Something went wrong..." };
             Response.StatusCode = 500;
+            return ResponseDto<UserDto>.Failed("Something went wrong...");
         }
 
         var user = await _userRepository.GetUserByUsername(userDto.UserName);
         await _cashService.CashingData(user.Id, user);
 
-        _responseDto.IsSuccess = true;
-        _responseDto.Result = "User is registered";
         Response.StatusCode = 200;
-        return _responseDto;
+        return ResponseDto<UserDto>.Success(userDto);
     }
 
     [HttpPost("login")]
-    public async Task<ResponseDto> Login(UserDto userDto)
+    public async Task<ResponseDto<Token>> Login(UserDto userDto)
     {
         var candidate = await _userRepository.GetUserByUsername(userDto.UserName);
 
         if (candidate == null)
         {
             Response.StatusCode = 404;
-            Response.ContentType = "application/json";
-            _responseDto.ErrorMessages = new List<string> { "User not found" };
-            _responseDto.IsSuccess = false;
-            return _responseDto;
+            return ResponseDto<Token>.Failed("User not found.");
         }
 
         if (!_passwordHashingService.VerifyHashedPassword(candidate.PasswordHash, userDto.Password))
         {
-            _responseDto.IsSuccess = false;
-            _responseDto.ErrorMessages = new List<string> { "Invalid refresh_token" };
-            return _responseDto;
+            return ResponseDto<Token>.Failed("Invalid refresh_token");
         }
         
         var userTokens = _tokenService.GenerateTokens(candidate);
         //TODO реализовать кэш токенов
         await _cashService.CashingData(candidate.Id, candidate);
-        _responseDto.Result = userTokens;
-        return _responseDto;
+        return ResponseDto<Token>.Success(userTokens);
     }
 
     [HttpGet("refresh-token")]
     [Authorize]
-    public async Task<ResponseDto> RefreshToken([FromQuery] string refreshToken)
+    public async Task<ResponseDto<Token>> RefreshToken([FromQuery] string refreshToken)
     {
-        if (_tokenService.ValidateRefreshToken(refreshToken))
+        if (!_tokenService.ValidateRefreshToken(refreshToken))
         {
-            var userId = User.Claims.FirstOrDefault(x => x.Type == "Id")?.Value;
-            if (userId == null)
-            {
-                Response.StatusCode = 404;
-                Response.ContentType = "application/json";
-                _responseDto.ErrorMessages = new List<string> { "User not found" };
-                _responseDto.IsSuccess = false;
-                return _responseDto;
-            }
-
-            var candidate = await _userRepository.GetUserById(Int64.Parse(userId));
-
-            var userTokens = _tokenService.GenerateTokens(candidate);
-            _responseDto.Result = userTokens;
-            return _responseDto;
+            return ResponseDto<Token>.Failed("Invalidate refresh token");
+        }
+        
+        var userId = User.Claims.FirstOrDefault(x => x.Type == "Id")?.Value;
+        if (userId == null)
+        {
+            Response.StatusCode = 404;
+            return ResponseDto<Token>.Failed("User not found");
         }
 
-        _responseDto.IsSuccess = false;
-        _responseDto.ErrorMessages = new List<string> { "Invalid refresh_token" };
-        return _responseDto;
+        var candidate = await _userRepository.GetUserById(long.Parse(userId));
+
+        if (candidate == null)
+        {
+            return ResponseDto<Token>.Failed("User not found");
+        }
+            
+        var userToken = _tokenService.GenerateTokens(candidate);
+        return ResponseDto<Token>.Success(userToken);
+
     }
 
     [HttpPost("logout")] //TODO ебучий логаут нужно доделать, но как я понимаю это нужен редис
