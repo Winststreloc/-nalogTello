@@ -19,7 +19,7 @@ public class UserService : IUserService
 
     public async Task<bool> RegisterUser(UserDto userDto)
     {
-        var user = new User()
+        var user = new User
         {
             Email = userDto.Email,
             UserName = userDto.UserName,

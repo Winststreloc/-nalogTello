@@ -1,5 +1,4 @@
-﻿using AnalogTrello.Models;
-using AnalogTrelloBE.Dto;
+﻿using AnalogTrelloBE.Dto;
 using AnalogTrelloBE.Models;
 using AutoMapper;
 

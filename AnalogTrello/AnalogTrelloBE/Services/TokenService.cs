@@ -1,7 +1,5 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Security.Principal;
-using AnalogTrello.Models;
 using AnalogTrelloBE.Helpers;
 using AnalogTrelloBE.Interfaces.IService;
 using AnalogTrelloBE.Models;
@@ -35,8 +33,8 @@ public class TokenService : ITokenService
     {
         var claims = new List<Claim>
         {
-            new Claim("Id", candidateForTokens.Id.ToString()),
-            new Claim("Username", candidateForTokens.UserName),
+            new("Id", candidateForTokens.Id.ToString()),
+            new("Username", candidateForTokens.UserName),
         };
         return claims;
     }
@@ -58,10 +56,11 @@ public class TokenService : ITokenService
     public string GenerateRefreshToken(List<Claim> userClaims)
     {
         var id = userClaims.Where(claim => claim.Type == "Id");
+        
         var jwt = new JwtSecurityToken(
             issuer: AuthOptions.ISSUER,
             audience: AuthOptions.AUDIENCE,
-            claims: userClaims.Where(claim => claim.Type == "Id"),
+            claims: id,
             expires: DateTime.UtcNow.Add(TimeSpan.FromDays(RefreshTokenExpiresDays)),
             signingCredentials: new SigningCredentials(AuthOptions.GetSymmetricSecurityKey(),
                 SecurityAlgorithms.HmacSha256));
@@ -74,7 +73,7 @@ public class TokenService : ITokenService
         var tokenHandler = new JwtSecurityTokenHandler();
         var validationParameters = new TokenValidationParameters()
         {
-            ValidateLifetime = false,
+            ValidateLifetime = true,
             ValidateAudience = false,
             ValidateIssuer = false,
             ValidIssuer = AuthOptions.ISSUER,
@@ -82,17 +81,31 @@ public class TokenService : ITokenService
             ValidAudience = AuthOptions.AUDIENCE,
         };
 
-        SecurityToken validatedToken;
-
         try
         {
-            IPrincipal principal = tokenHandler.ValidateToken(refreshToken, validationParameters, out validatedToken);
+            tokenHandler.ValidateToken(refreshToken, validationParameters, out var validatedToken);
+
+            if (validatedToken is not JwtSecurityToken jwtToken)
+            {
+                return false;
+            }
+
+            var expiration = jwtToken.ValidTo;
+
+            return expiration >= DateTime.UtcNow;
+        }
+        catch (SecurityTokenExpiredException)
+        {
+            return false;
         }
         catch (SecurityTokenSignatureKeyNotFoundException)
         {
             return false;
         }
-
-        return true;
+        catch (Exception)
+        {
+            return false;
+        }
     }
+
 }
