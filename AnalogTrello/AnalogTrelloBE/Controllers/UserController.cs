@@ -10,19 +10,11 @@ namespace AnalogTrelloBE.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class UserController : Controller
+public class UserController(IUserRepository userRepository, 
+    IMapper mapper, 
+    IDistributedCache distributedCache)
+    : Controller
 {
-    private readonly IMapper _mapper;
-    private readonly IUserRepository _userRepository;
-    private readonly IDistributedCache _cache;
-
-    public UserController(IUserRepository userRepository, IMapper mapper, IDistributedCache distributedCache)
-    {
-        _userRepository = userRepository;
-        _mapper = mapper;
-        _cache = distributedCache;
-    }
-
     [HttpGet("$id")]
     public async Task<ResponseDto<UserDto>> GetUser(long userId)
     {
@@ -35,7 +27,7 @@ public class UserController : Controller
         //todo тот же тип данных, а именно UserDto и Token
         UserDto? user = null;
         
-        var userString = await _cache.GetStringAsync(userId.ToString());
+        var userString = await distributedCache.GetStringAsync(userId.ToString());
         
         if (userString != null)
         {
@@ -44,7 +36,7 @@ public class UserController : Controller
 
         if (user == null)
         {
-            user = _mapper.Map<UserDto>(await _userRepository.GetUserById(userId));
+            user = mapper.Map<UserDto>(await userRepository.GetUserById(userId));
             if (user == null)
             {
                 Response.StatusCode = 404;
@@ -52,7 +44,7 @@ public class UserController : Controller
             }
 
             userString = JsonSerializer.Serialize(user);
-            await _cache.SetStringAsync(userId.ToString(), userString, new DistributedCacheEntryOptions
+            await distributedCache.SetStringAsync(userId.ToString(), userString, new DistributedCacheEntryOptions
             {
                 AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(2)
             });

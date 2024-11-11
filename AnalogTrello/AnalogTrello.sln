@@ -8,6 +8,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnalogTrelloFE", "AnalogTre
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AnalogTrelloBE", "AnalogTrelloBE", "{EC30FC50-446A-4190-8BBE-4805252FE188}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BuildingBlocks", "BuildingBlocks", "{BC0D2E52-A260-41CF-AF9C-4CB5B7498133}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuildingBlocks", "BuildingBlocks\BuildingBlocks.csproj", "{E9515CF8-213C-4F33-AA89-EE45316C6535}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -22,9 +26,14 @@ Global
 		{C57ABB80-F29F-4F9F-9B5D-1654591A4E43}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C57ABB80-F29F-4F9F-9B5D-1654591A4E43}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C57ABB80-F29F-4F9F-9B5D-1654591A4E43}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E9515CF8-213C-4F33-AA89-EE45316C6535}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E9515CF8-213C-4F33-AA89-EE45316C6535}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E9515CF8-213C-4F33-AA89-EE45316C6535}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E9515CF8-213C-4F33-AA89-EE45316C6535}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{C57ABB80-F29F-4F9F-9B5D-1654591A4E43} = {BCA4D431-BA91-428F-8D38-1AA21166291B}
 		{DF2E10BE-398B-4E00-BBC4-D3099AA0CDCC} = {EC30FC50-446A-4190-8BBE-4805252FE188}
+		{E9515CF8-213C-4F33-AA89-EE45316C6535} = {BC0D2E52-A260-41CF-AF9C-4CB5B7498133}
 	EndGlobalSection
 EndGlobal

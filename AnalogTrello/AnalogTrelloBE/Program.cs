@@ -1,5 +1,6 @@
 using AnalogTrelloBE.Data;
 using AnalogTrelloBE.Helpers;
+using BuildinBlocks.Auth;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -7,12 +8,11 @@ using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.ConfigureServices();
 
 builder.Services.AddControllers();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-// ReSharper disable once InvokeAsExtensionMethod
-DIExtentions.ConfigureServices(builder.Services);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(opt =>
 {
@@ -49,10 +49,19 @@ builder.Services.AddDbContext<ToDoDbContext>(options =>
 
 }); 
 
+builder.Services.AddCors(o =>
+{
+    o.AddPolicy("AllowSpecificOrigin",
+        b => b.WithOrigins("http://localhost:5000")
+            .AllowAnyHeader()
+            .AllowAnyMethod());
+});
+
+
 builder.Services.AddStackExchangeRedisCache(options =>
 {
     options.Configuration = "localhost:6379";
-    options.InstanceName = "redis-1";
+    options.InstanceName = "local";
 });
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -81,6 +90,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseCors("AllowSpecificOrigin");
 
 app.UseHttpsRedirection();
 

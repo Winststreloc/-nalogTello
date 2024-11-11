@@ -1,6 +1,6 @@
 ﻿using AnalogTrelloBE.Models;
 using Microsoft.EntityFrameworkCore;
-using Task = AnalogTrelloBE.Models.Task;
+using TaskScheduler = AnalogTrelloBE.Models.TaskScheduler;
 
 namespace AnalogTrelloBE.Data;
 
@@ -11,15 +11,15 @@ public class ToDoDbContext : DbContext
     }
 
     public DbSet<User> Users { get; set; }
-    public DbSet<Task> Tasks { get; set; }
+    public DbSet<TaskScheduler> Tasks { get; set; }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<User>()
             .HasKey(u => u.Id);
-        modelBuilder.Entity<Task>()
+        modelBuilder.Entity<TaskScheduler>()
             .HasKey(u => u.Id);
-        modelBuilder.Entity<Task>()
+        modelBuilder.Entity<TaskScheduler>()
             .HasOne(t => t.User)
             .WithMany(u => u.Tasks)
             .HasForeignKey(t => t.UserId);

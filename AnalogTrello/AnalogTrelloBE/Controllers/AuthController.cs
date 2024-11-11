@@ -2,6 +2,7 @@
 using AnalogTrelloBE.Interfaces.IRepository;
 using AnalogTrelloBE.Interfaces.IService;
 using AnalogTrelloBE.Models;
+using BuildingBlocks.Cache;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,25 +11,14 @@ namespace AnalogTrelloBE.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class AuthController : Controller
+public class AuthController(
+    IUserRepository userRepository,
+    IUserService userService,
+    IPasswordHashingService passwordHashingService,
+    ITokenService tokenService,
+    IRedisCacheService cashService)
+    : ControllerBase
 {
-    private readonly IUserRepository _userRepository;
-    private readonly IUserService _userService;
-    private readonly IPasswordHashingService _passwordHashingService;
-    private readonly ITokenService _tokenService;
-
-    private readonly ICashService _cashService;
-
-    public AuthController(IUserRepository userRepository, IUserService userService,
-        IPasswordHashingService passwordHashingService, ITokenService tokenService, ICashService cashService)
-    {
-        _userRepository = userRepository;
-        _userService = userService;
-        _passwordHashingService = passwordHashingService;
-        _tokenService = tokenService;
-        _cashService = cashService;
-    }
-
     [HttpPost("register")]
     public async Task<ResponseDto<UserDto>> Register(UserDto userDto)
     {
@@ -37,20 +27,26 @@ public class AuthController : Controller
             return ResponseDto<UserDto>.Failed("Invalid username or password.");
         }
 
-        if (!await _userRepository.EmailOrUsernameExists(userDto))
+        if (!await userRepository.EmailOrUsernameExists(userDto))
         {
             Response.StatusCode = 409;
             return ResponseDto<UserDto>.Failed("Email or Username exists");
         }
 
-        if (!await _userService.RegisterUser(userDto))
+        if (!await userService.RegisterUser(userDto))
         {
             Response.StatusCode = 500;
             return ResponseDto<UserDto>.Failed("Something went wrong...");
         }
 
-        var user = await _userRepository.GetUserByUsername(userDto.UserName);
-        await _cashService.CashingData(user.Id, user);
+        var user = await userRepository.GetUserByUsername(userDto.UserName);
+
+        if (user == null)
+        {
+            Response.StatusCode = 404;
+            return ResponseDto<UserDto>.Failed("Not found user.");
+        }
+        await cashService.SetAsync(user.Id.ToString(), user);
 
         Response.StatusCode = 200;
         return ResponseDto<UserDto>.Success(userDto);
@@ -59,7 +55,7 @@ public class AuthController : Controller
     [HttpPost("login")]
     public async Task<ResponseDto<Token>> Login(UserDto userDto)
     {
-        var candidate = await _userRepository.GetUserByUsername(userDto.UserName);
+        var candidate = await userRepository.GetUserByUsername(userDto.UserName);
 
         if (candidate == null)
         {
@@ -67,14 +63,15 @@ public class AuthController : Controller
             return ResponseDto<Token>.Failed("User not found.");
         }
 
-        if (!_passwordHashingService.VerifyHashedPassword(candidate.PasswordHash, userDto.Password))
+        if (!passwordHashingService.VerifyHashedPassword(candidate.PasswordHash, userDto.Password))
         {
             return ResponseDto<Token>.Failed("Invalid refresh_token");
         }
         
-        var userTokens = _tokenService.GenerateTokens(candidate);
-        //TODO реализовать кэш токенов
-        await _cashService.CashingData(candidate.Id, candidate);
+        var userTokens = tokenService.GenerateTokens(candidate);
+        
+        await cashService.SetAsync(candidate.Id.ToString(), candidate);
+        
         return ResponseDto<Token>.Success(userTokens);
     }
 
@@ -82,7 +79,7 @@ public class AuthController : Controller
     [Authorize]
     public async Task<ResponseDto<Token>> RefreshToken([FromQuery] string refreshToken)
     {
-        if (!_tokenService.ValidateRefreshToken(refreshToken))
+        if (!tokenService.ValidateRefreshToken(refreshToken))
         {
             return ResponseDto<Token>.Failed("Invalidate refresh token");
         }
@@ -94,14 +91,14 @@ public class AuthController : Controller
             return ResponseDto<Token>.Failed("User not found");
         }
 
-        var candidate = await _userRepository.GetUserById(long.Parse(userId));
+        var candidate = await userRepository.GetUserById(long.Parse(userId));
 
         if (candidate == null)
         {
             return ResponseDto<Token>.Failed("User not found");
         }
             
-        var userToken = _tokenService.GenerateTokens(candidate);
+        var userToken = tokenService.GenerateTokens(candidate);
         return ResponseDto<Token>.Success(userToken);
 
     }

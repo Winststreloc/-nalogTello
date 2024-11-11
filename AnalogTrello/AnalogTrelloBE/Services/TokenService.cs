@@ -3,6 +3,7 @@ using System.Security.Claims;
 using AnalogTrelloBE.Helpers;
 using AnalogTrelloBE.Interfaces.IService;
 using AnalogTrelloBE.Models;
+using BuildinBlocks.Auth;
 using Microsoft.IdentityModel.Tokens;
 
 namespace AnalogTrelloBE.Services;

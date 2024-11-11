@@ -64,6 +64,10 @@
                         <div id="register-error" class="alert alert-danger d-none">Registration error!</div>
                         <form id="register-form">
                             <div class="mb-3">
+                                <label for="register-userName" class="form-label">UserName</label>
+                                <input type="text" class="form-control" id="register-userName" required>
+                            </div>
+                            <div class="mb-3">
                                 <label for="register-email" class="form-label">Email</label>
                                 <input type="email" class="form-control" id="register-email" required>
                             </div>
@@ -94,8 +98,8 @@
                         <div id="login-error" class="alert alert-danger d-none">Login error!</div>
                         <form id="login-form">
                             <div class="mb-3">
-                                <label for="login-email" class="form-label">Email</label>
-                                <input type="email" class="form-control" id="login-email" required>
+                                <label for="login-userName" class="form-label">Username</label>
+                                <input type="text" class="form-control" id="login-userName" required>
                             </div>
                             <div class="mb-3">
                                 <label for="login-password" class="form-label">Password</label>
@@ -139,6 +143,7 @@
     <!-- Bootstrap and JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        const apiBaseUrl = 'https://localhost:7127';
         let isAuthenticated = false;
 
         document.addEventListener("DOMContentLoaded", () => {
@@ -146,6 +151,7 @@
 
             document.getElementById("register-form").addEventListener("submit", async function (e) {
                 e.preventDefault();
+                const userName = document.getElementById("register-userName").value;
                 const email = document.getElementById("register-email").value;
                 const password = document.getElementById("register-password").value;
                 const repeatPassword = document.getElementById("register-repeat-password").value;
@@ -154,15 +160,15 @@
                     document.getElementById("register-error").classList.remove("d-none");
                 } else {
                     try {
-                        const response = await fetch('/account/register', {
+                        const response = await fetch(`${apiBaseUrl}/Auth/register`, {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json'
                             },
-                            body: JSON.stringify({ email, password })
+                            body: JSON.stringify({ userName, email, password })
                         });
 
-                        if (response.ok) {
+                        if (response.status === 204) {
                             isAuthenticated = true;
                             document.getElementById("user-email").innerText = email;
                             updateUI();
@@ -178,23 +184,37 @@
 
             document.getElementById("login-form").addEventListener("submit", async function (e) {
                 e.preventDefault();
-                const email = document.getElementById("login-email").value;
+                const userName = document.getElementById("login-userName").value;
                 const password = document.getElementById("login-password").value;
+                let email = ' ';
 
                 try {
-                    const response = await fetch('/account/login', {
+                    const response = await fetch(`${apiBaseUrl}/Auth/login`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
                         },
-                        body: JSON.stringify({ email, password })
+                        body: JSON.stringify({ userName, email, password })
                     });
 
-                    if (response.ok) {
-                        isAuthenticated = true;
-                        document.getElementById("user-email").innerText = email;
-                        updateUI();
-                        bootstrap.Modal.getInstance(document.getElementById('loginModal')).hide();
+                    if (response.ok === true) {
+                        const responseData = await response.json();
+                        
+                        if (responseData.isSuccess) {
+                            const { accessToken, refreshToken, username, userId } = responseData.result;
+
+                            localStorage.setItem('accessToken', accessToken);
+                            localStorage.setItem('refreshToken', refreshToken);
+                            localStorage.setItem('username', username);
+                            localStorage.setItem('userId', userId);
+
+                            isAuthenticated = true;
+                            document.getElementById("user-email").innerText = username;
+                            updateUI();
+                            bootstrap.Modal.getInstance(document.getElementById('loginModal')).Close();
+                        } else {
+                            document.getElementById("login-error").classList.remove("d-none");
+                        }
                     } else {
                         document.getElementById("login-error").classList.remove("d-none");
                     }
@@ -203,15 +223,143 @@
                 }
             });
 
-            // Logout Button
             document.getElementById("logoutBtn").addEventListener("click", async function () {
-                await fetch('/account/logout', {
+                await fetch(`${apiBaseUrl}/Auth/logout`, {  // Обновили URL
                     method: 'POST'
                 });
                 isAuthenticated = false;
                 updateUI();
             });
+
+            document.getElementById("add-task-btn").addEventListener("click", async function () {
+                const taskTitle = document.getElementById("task-title-input").value;
+
+                if (taskTitle.trim() === "") {
+                    alert("Task title cannot be empty");
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`${apiBaseUrl}/TaskScheduler/task`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+                        },
+                        body: JSON.stringify({ title: taskTitle })
+                    });
+
+                    if (response.ok) {
+                        const task = await response.json();
+                        addTaskToPendingList(task);
+                        document.getElementById("task-title-input").value = ""; // Clear input field
+                    } else {
+                        alert("Error adding task");
+                    }
+                } catch (error) {
+                    alert("Error adding task");
+                }
+            });
+
+            // Функция для добавления задачи в список Pending
+            function addTaskToPendingList(task) {
+                const taskItem = document.createElement("li");
+                taskItem.classList.add("list-group-item");
+                taskItem.innerHTML = `
+                <input type="checkbox" class="form-check-input me-2" id="task-${task.id}">
+                <label class="form-check-label" for="task-${task.id}">${task.title}</label>
+                <button class="btn btn-danger btn-sm float-end" onclick="deleteTask(${task.id})">Delete</button>
+            `;
+                taskItem.querySelector("input").addEventListener("change", function () {
+                    toggleTaskStatus(task.id, this.checked);
+                });
+                document.getElementById("pending-tasks-list").appendChild(taskItem);
+            }
+
+            // Функция для изменения статуса задачи
+            async function toggleTaskStatus(taskId, isCompleted) {
+                try {
+                    const response = await fetch(`${apiBaseUrl}/tasks/${taskId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+                        },
+                        body: JSON.stringify({ isCompleted })
+                    });
+
+                    if (response.ok) {
+                        const taskItem = document.getElementById(`task-${taskId}`).parentElement;
+                        taskItem.remove(); // Удаляем задачу из текущего списка
+                        if (isCompleted) {
+                            addTaskToCompletedList(taskId, taskItem);
+                        } else {
+                            document.getElementById("pending-tasks-list").appendChild(taskItem);
+                        }
+                    } else {
+                        alert("Error updating task status");
+                    }
+                } catch (error) {
+                    alert("Error updating task status");
+                }
+            }
+
+            // Функция для добавления задачи в список Completed
+            function addTaskToCompletedList(taskId, taskItem) {
+                const checkbox = taskItem.querySelector("input");
+                checkbox.checked = true;
+                document.getElementById("completed-tasks-list").appendChild(taskItem);
+            }
+
+            // Функция для удаления задачи
+            async function deleteTask(taskId) {
+                try {
+                    const response = await fetch(`${apiBaseUrl}/tasks/${taskId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+                        }
+                    });
+
+                    if (response.ok) {
+                        document.getElementById(`task-${taskId}`).parentElement.remove();
+                    } else {
+                        alert("Error deleting task");
+                    }
+                } catch (error) {
+                    alert("Error deleting task");
+                }
+            }
+
+            // Функция для получения списка задач при загрузке страницы
+            async function loadTasks() {
+                try {
+                    const response = await fetch(`${apiBaseUrl}/TaskScheduler/tasks`, {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+                        }
+                    });
+
+                    if (response.ok) {
+                        const tasks = await response.json();
+                        tasks.forEach(task => {
+                            if (task.isCompleted) {
+                                addTaskToCompletedList(task);
+                            } else {
+                                addTaskToPendingList(task);
+                            }
+                        });
+                    } else {
+                        alert("Error loading tasks");
+                    }
+                } catch (error) {
+                    alert("Error loading tasks");
+                }
+            }
         });
+
+
 
         function updateUI() {
             if (isAuthenticated) {

@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using Microsoft.IdentityModel.Tokens;
 
-namespace AnalogTrelloBE.Helpers;
+namespace BuildinBlocks.Auth;
 
 public class AuthOptions
 {

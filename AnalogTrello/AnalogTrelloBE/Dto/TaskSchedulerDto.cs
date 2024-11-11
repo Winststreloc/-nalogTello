@@ -1,13 +1,11 @@
-﻿using AnalogTrello.Models;
+namespace AnalogTrelloBE.Dto;
 
-namespace AnalogTrelloBE.Models;
-
-public class Task : BaseEntity
+public class TaskSchedulerDto
 {
+    public long Id { get; set; }
     public string Title { get; set; }
     public string Text { get; set; }
     public long UserId { get; set; }
-    public User User { get; set; }
     public TaskStatus TaskStatus { get; set; }
     public DateTime EndTimeTask { get; set; }
 }
