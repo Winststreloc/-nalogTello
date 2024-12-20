@@ -1,5 +1,4 @@
-﻿using AnalogTrello.Models;
-using AnalogTrelloBE.Dto;
+﻿using AnalogTrelloBE.Dto;
 using AnalogTrelloBE.Interfaces.IRepository;
 using AnalogTrelloBE.Interfaces.IService;
 using AnalogTrelloBE.Models;

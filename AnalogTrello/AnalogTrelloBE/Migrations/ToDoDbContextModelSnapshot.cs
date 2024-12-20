@@ -22,7 +22,7 @@ namespace AnalogTrelloBE.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("AnalogTrello.Models.Task", b =>
+            modelBuilder.Entity("AnalogTrelloBE.Models.TaskScheduler", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -57,7 +57,7 @@ namespace AnalogTrelloBE.Migrations
                     b.ToTable("Tasks");
                 });
 
-            modelBuilder.Entity("AnalogTrello.Models.User", b =>
+            modelBuilder.Entity("AnalogTrelloBE.Models.User", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -85,9 +85,9 @@ namespace AnalogTrelloBE.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("AnalogTrello.Models.Task", b =>
+            modelBuilder.Entity("AnalogTrelloBE.Models.TaskScheduler", b =>
                 {
-                    b.HasOne("AnalogTrello.Models.User", "User")
+                    b.HasOne("AnalogTrelloBE.Models.User", "User")
                         .WithMany("Tasks")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -96,7 +96,7 @@ namespace AnalogTrelloBE.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("AnalogTrello.Models.User", b =>
+            modelBuilder.Entity("AnalogTrelloBE.Models.User", b =>
                 {
                     b.Navigation("Tasks");
                 });

@@ -12,7 +12,7 @@ public class TaskSchedulerSchedulerRepository(ToDoDbContext context,
 {
     public async Task<TaskScheduler[]> GetAllTasks()
     {
-        throw new NotImplementedException();
+        return await context.Tasks.ToArrayAsync();
     }
 
     public async Task<TaskScheduler?> GetTask(long id)
@@ -20,34 +20,87 @@ public class TaskSchedulerSchedulerRepository(ToDoDbContext context,
         return await context.Tasks.FirstOrDefaultAsync(x => x.Id == id);
     }
 
-    public TaskSchedulerDto CreateTask(TaskSchedulerDto taskDto)
+    public async Task<TaskSchedulerDto> CreateTask(TaskSchedulerDto taskDto)
     {
         var task = mapper.Map<TaskScheduler>(taskDto);
 
         context.Tasks.Add(task);
 
+        await context.SaveChangesAsync();
+        
         var result = mapper.Map<TaskSchedulerDto>(task);
 
         return result;
     }
+    
 
     public async Task DeleteTasks(IEnumerable<long> ids)
     {
-        throw new NotImplementedException();
+        var deleteTasks = await context.Tasks
+            .Where(x => ids.Contains(x.Id))
+            .ToListAsync();
+
+        context.Tasks.RemoveRange(deleteTasks);
+
+        await context.SaveChangesAsync();
     }
 
     public async Task DeleteTask(long id)
     {
-        throw new NotImplementedException();
+        var task = await context.Tasks.FirstOrDefaultAsync(x => x.Id == id);
+
+        if (task == null)
+        {
+            return;
+        }
+        
+        context.Tasks.Remove(task);
+
+        await context.SaveChangesAsync();
     }
 
-    public async Task UpdateTasks(IEnumerable<TaskSchedulerDto> tasks)
+    public async Task UpdateTasks(TaskSchedulerDto[] tasks)
     {
-        throw new NotImplementedException();
+        var ids = tasks
+            .Select(dto => dto.Id)
+            .ToList();
+        
+        var existingTasks = await context.Tasks
+            .Where(t => ids.Contains(t.Id))
+            .ToListAsync();
+
+        foreach (var taskScheduler in existingTasks)
+        {
+            var dto = tasks.FirstOrDefault(t => t.Id == taskScheduler.Id);
+            
+            if (dto == null)
+            {
+                continue;
+            }
+            
+            taskScheduler.Title = dto.Title;
+            taskScheduler.Text = dto.Text;
+            taskScheduler.EndTimeTask = dto.EndTimeTask;
+            taskScheduler.TaskStatus = dto.TaskStatus;
+        }
+
+        await context.SaveChangesAsync();
     }
 
-    public async Task UpdateTask(TaskSchedulerDto taskSchedulerDto)
+    public async Task UpdateTask(TaskSchedulerDto taskDto)
     {
-        throw new NotImplementedException();
+        var task = await context.Tasks.FirstOrDefaultAsync(x => x.Id == taskDto.Id);
+
+        if (task == null)
+        {
+            return;
+        }
+        
+        task.Title = taskDto.Title;
+        task.Text = taskDto.Text;
+        task.EndTimeTask = taskDto.EndTimeTask;
+        task.TaskStatus = taskDto.TaskStatus;
+
+        await context.SaveChangesAsync();
     }
 }

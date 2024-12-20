@@ -1,16 +1,31 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35514.174
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnalogTrelloBE", "AnalogTrelloBE\AnalogTrelloBE.csproj", "{DF2E10BE-398B-4E00-BBC4-D3099AA0CDCC}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AnalogTrelloFE", "AnalogTrelloFE", "{BCA4D431-BA91-428F-8D38-1AA21166291B}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnalogTrelloFE", "AnalogTrelloFE\AnalogTrelloFE\AnalogTrelloFE.csproj", "{C57ABB80-F29F-4F9F-9B5D-1654591A4E43}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AnalogTrelloBE", "AnalogTrelloBE", "{EC30FC50-446A-4190-8BBE-4805252FE188}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BuildingBlocks", "BuildingBlocks", "{BC0D2E52-A260-41CF-AF9C-4CB5B7498133}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuildingBlocks", "BuildingBlocks\BuildingBlocks.csproj", "{E9515CF8-213C-4F33-AA89-EE45316C6535}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AnalogTrelloFE", "AnalogTrelloFE", "{02CC2311-8D50-4754-BE02-C6D004549221}"
+	ProjectSection(SolutionItems) = preProject
+		AnalogTrelloFE\index.html = AnalogTrelloFE\index.html
+		AnalogTrelloFE\scripts.js = AnalogTrelloFE\scripts.js
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AnalogTrello.Tests", "AnalogTrello.Tests", "{5AC9D72F-7608-49DD-B440-B2CA34491A2D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnalogTrello.BE.Tests", "AnalogTrello.BE.Tests\AnalogTrello.BE.Tests.csproj", "{B2B49709-4D6A-4A5F-AB68-B2770AB0AFA5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AnalogTrello.Windows.App", "AnalogTrello.Windows.App", "{86387A01-239E-4D9B-B4FC-E9C0BD9C1E36}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnalogTrello.Windows.App", "AnalogTrello.Windows.App\AnalogTrello.Windows.App.csproj", "{7BA91446-A213-4C02-9143-C8A42A84ED9C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnalogTrello.Windows.Core", "AnalogTrello.Windows.Core\AnalogTrello.Windows.Core.csproj", "{AA7B3EB3-27C8-4A32-843A-2ABCB0C2F1BD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -22,18 +37,31 @@ Global
 		{DF2E10BE-398B-4E00-BBC4-D3099AA0CDCC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DF2E10BE-398B-4E00-BBC4-D3099AA0CDCC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DF2E10BE-398B-4E00-BBC4-D3099AA0CDCC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C57ABB80-F29F-4F9F-9B5D-1654591A4E43}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C57ABB80-F29F-4F9F-9B5D-1654591A4E43}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C57ABB80-F29F-4F9F-9B5D-1654591A4E43}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C57ABB80-F29F-4F9F-9B5D-1654591A4E43}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E9515CF8-213C-4F33-AA89-EE45316C6535}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E9515CF8-213C-4F33-AA89-EE45316C6535}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E9515CF8-213C-4F33-AA89-EE45316C6535}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E9515CF8-213C-4F33-AA89-EE45316C6535}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B2B49709-4D6A-4A5F-AB68-B2770AB0AFA5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B2B49709-4D6A-4A5F-AB68-B2770AB0AFA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B2B49709-4D6A-4A5F-AB68-B2770AB0AFA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B2B49709-4D6A-4A5F-AB68-B2770AB0AFA5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7BA91446-A213-4C02-9143-C8A42A84ED9C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7BA91446-A213-4C02-9143-C8A42A84ED9C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7BA91446-A213-4C02-9143-C8A42A84ED9C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7BA91446-A213-4C02-9143-C8A42A84ED9C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AA7B3EB3-27C8-4A32-843A-2ABCB0C2F1BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AA7B3EB3-27C8-4A32-843A-2ABCB0C2F1BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AA7B3EB3-27C8-4A32-843A-2ABCB0C2F1BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AA7B3EB3-27C8-4A32-843A-2ABCB0C2F1BD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{C57ABB80-F29F-4F9F-9B5D-1654591A4E43} = {BCA4D431-BA91-428F-8D38-1AA21166291B}
 		{DF2E10BE-398B-4E00-BBC4-D3099AA0CDCC} = {EC30FC50-446A-4190-8BBE-4805252FE188}
 		{E9515CF8-213C-4F33-AA89-EE45316C6535} = {BC0D2E52-A260-41CF-AF9C-4CB5B7498133}
+		{B2B49709-4D6A-4A5F-AB68-B2770AB0AFA5} = {5AC9D72F-7608-49DD-B440-B2CA34491A2D}
+		{7BA91446-A213-4C02-9143-C8A42A84ED9C} = {86387A01-239E-4D9B-B4FC-E9C0BD9C1E36}
+		{AA7B3EB3-27C8-4A32-843A-2ABCB0C2F1BD} = {86387A01-239E-4D9B-B4FC-E9C0BD9C1E36}
 	EndGlobalSection
 EndGlobal

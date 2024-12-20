@@ -1,4 +1,4 @@
-﻿using AnalogTrello.Models;
+﻿using TaskStatus = AnalogTrelloBE.Models.Enums.TaskStatus;
 
 namespace AnalogTrelloBE.Models;
 

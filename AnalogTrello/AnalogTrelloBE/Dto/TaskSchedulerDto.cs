@@ -1,3 +1,5 @@
+using TaskStatus = AnalogTrelloBE.Models.Enums.TaskStatus;
+
 namespace AnalogTrelloBE.Dto;
 
 public class TaskSchedulerDto

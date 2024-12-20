@@ -1,0 +1,51 @@
+<Window
+    Height="720"
+    Title="ShellView"
+    Width="1280"
+    WindowStyle="None"
+    d:DataContext="{d:DesignInstance viewModels:ShellViewModel}"
+    mc:Ignorable="d"
+    x:Class="AnalogTrello.Windows.App.Views.ShellView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:controls="clr-namespace:AnalogTrello.Windows.App.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:dashBoard="clr-namespace:AnalogTrello.Windows.App.ViewModels.DashBoard"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    xmlns:viewModels="clr-namespace:AnalogTrello.Windows.App.ViewModels"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <ListBox
+            BorderThickness="0"
+            Grid.Column="0"
+            Margin="0,50,0,50"
+            SelectionMode="Single">
+
+            <controls:NavButton
+                Margin="3"
+                MethodName="OnNavigate"
+                Navlink="dashBoard:DashBoardViewModel"
+                Padding="6">
+                <controls:NavButton.Icon>
+                    <ui:ImageIcon Source="pack://application:,,,/Resource/Icons/main-menu.ico" />
+                </controls:NavButton.Icon>
+            </controls:NavButton>
+
+        </ListBox>
+
+        <ContentPresenter Grid.Row="0" Grid.RowSpan="2" />
+
+        <ui:TitleBar
+            CloseWindowByDoubleClickOnIcon="True"
+            Grid.Row="0"
+            Title="AnalogTrello">
+            <ui:TitleBar.Icon>
+                <ui:ImageIcon Source="pack://application:,,,/Resource/Icons/app.ico" />
+            </ui:TitleBar.Icon>
+        </ui:TitleBar>
+    </Grid>
+</Window>

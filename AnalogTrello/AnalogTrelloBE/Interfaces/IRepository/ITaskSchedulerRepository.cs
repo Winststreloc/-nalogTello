@@ -8,9 +8,9 @@ public interface ITaskSchedulerRepository
 {
     Task<TaskScheduler[]> GetAllTasks();
     Task<TaskScheduler?> GetTask(long id);
-    TaskSchedulerDto CreateTask(TaskSchedulerDto task);
+    Task<TaskSchedulerDto> CreateTask(TaskSchedulerDto task);
     Task DeleteTasks(IEnumerable<long> ids);
     Task DeleteTask(long id);
-    Task UpdateTasks(IEnumerable<TaskSchedulerDto> tasks);
-    Task UpdateTask(TaskSchedulerDto taskSchedulerDto);
+    Task UpdateTasks(TaskSchedulerDto[] tasks);
+    Task UpdateTask(TaskSchedulerDto taskDto);
 }

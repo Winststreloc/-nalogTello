@@ -16,7 +16,7 @@ public class TaskSchedulerController(ITaskSchedulerRepository taskSchedulerRepos
     {
         var tasks = await taskSchedulerRepository.GetAllTasks();
 
-        if (tasks.Length == 0)
+        if (tasks.Length != 0)
         {
             return ResponseDto<TaskScheduler[]>.Success(tasks);
         }
@@ -42,9 +42,9 @@ public class TaskSchedulerController(ITaskSchedulerRepository taskSchedulerRepos
     }
     
     [HttpPost("task")]
-    public ResponseDto<TaskSchedulerDto> CreateTask([FromBody]TaskSchedulerDto task)
+    public async Task<ResponseDto<TaskSchedulerDto>> CreateTask([FromBody]TaskSchedulerDto task)
     {
-        var createdTask = taskSchedulerRepository.CreateTask(task);
+        var createdTask = await taskSchedulerRepository.CreateTask(task);
 
         return ResponseDto<TaskSchedulerDto>.Success(createdTask);
     }
@@ -53,6 +53,16 @@ public class TaskSchedulerController(ITaskSchedulerRepository taskSchedulerRepos
     public IActionResult UpdateTask([FromBody]TaskSchedulerDto task)
     {
         taskSchedulerRepository.UpdateTask(task);
+
+        Response.StatusCode = 204;
+
+        return Ok();
+    }
+    
+    [HttpDelete("task")]
+    public IActionResult DeleteTask([FromBody]long id)
+    {
+        taskSchedulerRepository.DeleteTask(id);
 
         Response.StatusCode = 204;
 

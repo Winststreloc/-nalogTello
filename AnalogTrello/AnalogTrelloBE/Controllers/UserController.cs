@@ -1,5 +1,4 @@
 ﻿using System.Text.Json;
-using AnalogTrello.Models;
 using AnalogTrelloBE.Dto;
 using AnalogTrelloBE.Interfaces.IRepository;
 using AutoMapper;

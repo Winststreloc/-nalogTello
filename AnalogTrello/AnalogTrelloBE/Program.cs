@@ -8,6 +8,8 @@ using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
 builder.Services.ConfigureServices();
 
 builder.Services.AddControllers();
@@ -38,7 +40,7 @@ builder.Services.AddSwaggerGen(opt =>
                     Id="Bearer"
                 }
             },
-            new string[]{}
+            Array.Empty<string>()
         }
     });
 });
@@ -52,7 +54,7 @@ builder.Services.AddDbContext<ToDoDbContext>(options =>
 builder.Services.AddCors(o =>
 {
     o.AddPolicy("AllowSpecificOrigin",
-        b => b.WithOrigins("http://localhost:5000")
+        b => b.WithOrigins("http://localhost:63342")
             .AllowAnyHeader()
             .AllowAnyMethod());
 });
